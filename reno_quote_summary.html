@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Condo Renovation Quote Comparison - 4 Companies</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e0e0e0;line-height:1.6}
+header{background:linear-gradient(135deg,#1a1d2e,#2a2d3e);padding:28px 40px;border-bottom:1px solid #2a2d4e}
+header h1{font-size:24px;font-weight:700;color:#fff}
+.subtitle{color:#8b8fa3;font-size:13px;margin-top:4px}
+main{max-width:1500px;margin:0 auto;padding:20px 40px 60px}
+section{margin-bottom:24px}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.card{background:#1a1d2e;border:1px solid #2a2d4e;border-radius:10px;padding:16px 18px}
+.card-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#8b8fa3;margin-bottom:4px}
+.card-value{font-size:22px;font-weight:700;color:#fff}
+.card-sub{font-size:11px;color:#8b8fa3;margin-top:3px}
+.card.hulse .card-value{color:#60a5fa}
+.card.ibina .card-value{color:#f59e0b}
+.card.movein .card-value{color:#a78bfa}
+.card.klaas .card-value{color:#f472b6}
+.card.best .card-value{color:#34d399;font-size:18px}
+.chart-wrap{background:#1a1d2e;border:1px solid #2a2d4e;border-radius:12px;padding:20px}
+.chart-wrap h2{font-size:15px;font-weight:600;margin-bottom:10px;color:#fff}
+.legend{display:flex;gap:14px;margin-bottom:8px;font-size:11px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:4px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.dot-h{background:#60a5fa}.dot-i{background:#f59e0b}.dot-m{background:#a78bfa}.dot-k{background:#f472b6}
+.cat-nav{display:flex;flex-wrap:wrap;gap:7px}
+.cat-btn{padding:7px 13px;border-radius:7px;border:1px solid #2a2d4e;background:#1a1d2e;color:#c0c4d6;cursor:pointer;font-size:11px;transition:all .2s}
+.cat-btn:hover{border-color:#60a5fa;color:#60a5fa}
+.cat-btn.active{background:#60a5fa;color:#fff;border-color:#60a5fa}
+.detail-table-wrap{background:#1a1d2e;border:1px solid #2a2d4e;border-radius:12px;overflow:hidden}
+.detail-table-wrap h2{padding:16px 20px 8px;font-size:15px;font-weight:600;color:#fff}
+.tbl-scroll{max-height:650px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead th{background:#141622;padding:8px 8px;text-align:left;font-weight:600;color:#8b8fa3;text-transform:uppercase;font-size:9.5px;letter-spacing:.4px;border-bottom:1px solid #2a2d4e;position:sticky;top:0;z-index:2}
+tbody td{padding:7px 8px;border-bottom:1px solid #1e2132;vertical-align:top}
+tbody tr:hover{background:#1e2235}
+.cat-row td{background:#141622;font-weight:700;color:#c0c4d6;font-size:11px;padding:9px 8px;border-bottom:2px solid #2a2d4e}
+.lowest{color:#34d399;font-weight:700}
+.na{color:#444}
+.badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600}
+.badge-h{background:rgba(96,165,250,.15);color:#60a5fa}
+.badge-i{background:rgba(245,158,11,.15);color:#f59e0b}
+.badge-m{background:rgba(167,139,250,.15);color:#a78bfa}
+.badge-k{background:rgba(244,114,182,.15);color:#f472b6}
+.badge-tie{background:rgba(139,143,163,.1);color:#8b8fa3}
+.cat-compare{background:#1a1d2e;border:1px solid #2a2d4e;border-radius:12px;overflow:hidden;margin-bottom:20px}
+.cat-compare h2{padding:16px 20px 8px;font-size:15px;font-weight:600;color:#fff}
+.cat-compare table td,.cat-compare table th{padding:10px 14px}
+.design-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.design-card{background:#1a1d2e;border:1px solid #2a2d4e;border-radius:10px;padding:18px}
+.design-card h3{font-size:13px;font-weight:600;margin-bottom:8px}
+.design-card.hulse h3{color:#60a5fa}
+.design-card.ibina h3{color:#f59e0b}
+.design-card.movein h3{color:#a78bfa}
+.design-card.klaas h3{color:#f472b6}
+.design-card ul{list-style:none;padding:0}
+.design-card li{padding:4px 0;border-bottom:1px solid #1e2132;font-size:11px;color:#c0c4d6}
+.design-card li:last-child{border:none}
+.design-card li strong{color:#e0e0e0}
+.rec-card{background:linear-gradient(135deg,#1a2332,#1a1d2e);border:1px solid #2a4d6e;border-radius:12px;padding:22px}
+.rec-card h2{font-size:17px;font-weight:700;color:#fff;margin-bottom:12px}
+.rec-card .rec-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.rec-item{padding:14px;background:rgba(255,255,255,.03);border-radius:8px}
+.rec-item h4{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#8b8fa3;margin-bottom:4px}
+.rec-item p{font-size:12px;color:#e0e0e0}
+.rec-verdict{padding:14px;background:rgba(96,165,250,.06);border-radius:8px;border-left:3px solid #60a5fa}
+.rec-verdict p{font-size:12px;color:#e0e0e0;line-height:1.7;margin-bottom:5px}
+.rec-verdict p:last-child{margin:0}
+.klaas-note{background:#1a1d2e;border:1px solid #f472b644;border-radius:10px;padding:16px 20px;margin-bottom:20px}
+.klaas-note h3{color:#f472b6;font-size:14px;margin-bottom:8px}
+.klaas-note p{font-size:12px;color:#c0c4d6;margin-bottom:6px}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}.design-grid,.rec-grid{grid-template-columns:1fr!important}main{padding:14px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Condo Renovation Quotation Comparison</h1>
+<p class="subtitle">Hulse Design vs IBINA Concept vs MoveIn vs KlaaS Design | Lum Hilltop Condo</p>
+</header>
+<main>
+<section id="summary-cards"></section>
+<section id="klaas-note"></section>
+<section id="cat-compare-section"></section>
+<section id="chart-section"></section>
+<section id="category-nav"></section>
+<section id="detail-section"></section>
+<section id="design-section"></section>
+<section id="recommendation-section"></section>
+</main>
+<script>
+const DATA = {
+categories: [
+{
+  name:"Preliminary & Preparatory Works",
+  items:[
+    {desc:"Floor protection",hulse:{qty:1,unit:"SET",price:450,amt:450},ibina:{qty:1,unit:"SET",price:300,amt:300},movein:{qty:1,unit:"LS",price:333.40,amt:333.40}},
+    {desc:"Waste & garbage disposal",hulse:{qty:1,unit:"SET",price:300,amt:300},ibina:{qty:1,unit:"SET",price:300,amt:300},movein:{qty:1,unit:"LS",price:250,amt:250}},
+    {desc:"Basic cleaning after completion",hulse:{qty:1,unit:"SET",price:350,amt:350},ibina:{qty:1,unit:"SET",price:300,amt:300},movein:{qty:1,unit:"LS",price:250,amt:250}},
+    {desc:"Defect checking (cashback)",hulse:null,ibina:null,movein:{qty:1,unit:"SET",price:0,amt:-300,note:"RM300 cashback"}},
+    {desc:"Project management & supervision",hulse:null,ibina:null,movein:{qty:1,unit:"LS",price:0,amt:0,note:"Free (worth RM2000)"}}
+  ]
+},
+{
+  name:"Electrical & Wiring Works",
+  items:[
+    {desc:"New lighting point at plaster ceiling",hulse:{qty:29,unit:"NOS",price:75,amt:2175},ibina:{qty:25,unit:"NOS",price:75,amt:1875},movein:{qty:11,unit:"NOS",price:90,amt:990,note:"Looping light point"}},
+    {desc:"Concealed carpentry lighting point",hulse:null,ibina:{qty:4,unit:"NOS",price:250,amt:1000},movein:{qty:2,unit:"SET",price:380,amt:760,note:"LED set incl wiring/switch/driver"}},
+    {desc:"Fan point at ceiling",hulse:{qty:5,unit:"NOS",price:145,amt:725},ibina:{qty:5,unit:"NOS",price:80,amt:400},movein:{qty:2,unit:"NOS",price:100,amt:200,note:"Relocated fan point"}},
+    {desc:"Install ceiling light",hulse:{qty:33,unit:"NOS",price:20,amt:660},ibina:{qty:26,unit:"NOS",price:25,amt:650},movein:{qty:20,unit:"NOS",price:35,amt:700}},
+    {desc:"Install ceiling fan",hulse:{qty:5,unit:"NOS",price:60,amt:300},ibina:{qty:4,unit:"SET",price:25,amt:100},movein:{qty:4,unit:"NOS",price:80,amt:320}},
+    {desc:"New/relocate 13A power point",hulse:{qty:13,unit:"NOS",price:150,amt:1950},ibina:{qty:5,unit:"NOS",price:100,amt:500},movein:{qty:10,unit:"NOS",price:160,amt:1600}},
+    {desc:"Install power track",hulse:{qty:2,unit:"NOS",price:50,amt:100},ibina:{qty:6,unit:"SET",price:25,amt:150},movein:null},
+    {desc:"New cooker hood point c/w switch",hulse:{qty:1,unit:"NOS",price:200,amt:200},ibina:null,movein:null},
+    {desc:"T5/LED light point for L-box/pelmet",hulse:{qty:4,unit:"NOS",price:70,amt:280},ibina:null,movein:{qty:1,unit:"SET",price:500,amt:500,note:"LED set for plaster ceiling pelmet"}},
+    {desc:"Install T5/LED lights",hulse:{qty:10,unit:"NOS",price:15,amt:150},ibina:null,movein:null},
+    {desc:"Cabinet lighting point",hulse:{qty:14,unit:"NOS",price:75,amt:1050},ibina:null,movein:null},
+    {desc:"Install cabinet LED strip light",hulse:{qty:10,unit:"SET",price:150,amt:1500},ibina:null,movein:null},
+    {desc:"Install door bell",hulse:{qty:1,unit:"NOS",price:25,amt:25},ibina:null,movein:null},
+    {desc:"Install instant water heater",hulse:{qty:2,unit:"NOS",price:130,amt:260},ibina:null,movein:null},
+    {desc:"Tracklight new light point (Living)",hulse:null,ibina:null,movein:{qty:1,unit:"NOS",price:250,amt:250}},
+    {desc:"Fan hook relocation",hulse:null,ibina:null,movein:{qty:2,unit:"NOS",price:50,amt:100}}
+  ]
+},
+{
+  name:"Light Fixtures & Electrical Items",
+  items:[
+    {desc:"Eyeball/Downlight LED",hulse:{qty:31,unit:"NOS",price:30,amt:930},ibina:{qty:22,unit:"NOS",price:20,amt:440},movein:null,note:"MoveIn optional RM30/nos"},
+    {desc:"Surface mounted LED light",hulse:{qty:1,unit:"NOS",price:35,amt:35},ibina:{qty:3,unit:"NOS",price:25,amt:75},movein:null},
+    {desc:"Recessed downlight",hulse:{qty:1,unit:"NOS",price:30,amt:30},ibina:null,movein:null},
+    {desc:"Power track (fixture)",hulse:null,ibina:{qty:6,unit:"SET",price:200,amt:1200},movein:null},
+    {desc:"Power track plugs",hulse:null,ibina:{qty:11,unit:"NOS",price:40,amt:440},movein:null},
+    {desc:"Deka 5-blade ceiling fan (remote)",hulse:{qty:4,unit:"NOS",price:260,amt:1040},ibina:{qty:4,unit:"NOS",price:250,amt:1000,note:"DC Motor"},movein:null,note:"MoveIn optional RM550"},
+    {desc:"Deka baby ceiling fan (remote)",hulse:{qty:1,unit:"NOS",price:330,amt:330},ibina:{qty:1,unit:"NOS",price:350,amt:350,note:"DC Motor"},movein:null,note:"MoveIn optional RM350"},
+    {desc:"Door bell (material)",hulse:{qty:1,unit:"NOS",price:80,amt:80},ibina:null,movein:null},
+    {desc:"LED strip c/w driver set",hulse:{qty:10,unit:"SET",price:180,amt:1800},ibina:null,movein:null},
+    {desc:"T5 light LED (material)",hulse:{qty:10,unit:"NOS",price:20,amt:200},ibina:null,movein:null}
+  ]
+},
+{
+  name:"Air-Conditioning",
+  items:[
+    {desc:"Install wall unit aircond 1HP/1.5HP",hulse:{qty:4,unit:"NOS",price:280,amt:1120},ibina:null,movein:null}
+  ]
+},
+{
+  name:"Ceiling Works",
+  items:[
+    {desc:"Plaster ceiling board plain design",hulse:{qty:870,unit:"SQFT",price:4.80,amt:4176},ibina:{qty:920,unit:"SQFT",price:6,amt:5520},movein:{qty:350,unit:"SQFT",price:6,amt:2100}},
+    {desc:"Curtain pelmet / L-box",hulse:{qty:1,unit:"SET",price:600,amt:600},ibina:null,movein:{qty:14,unit:"FT",price:25,amt:350}},
+    {desc:"Light trough design",hulse:{qty:23.5,unit:"FT",price:25,amt:587.5},ibina:{qty:40.5,unit:"FT",price:25,amt:1012.5},movein:null},
+    {desc:"Open light hole on plaster ceiling",hulse:null,ibina:{qty:20,unit:"NOS",price:5,amt:100},movein:null}
+  ]
+},
+{
+  name:"Wall Finishing / Painting",
+  items:[
+    {desc:"Paint entire house (walls & ceiling)",hulse:{qty:1,unit:"SET",price:3500,amt:3500,note:"Basic colour, excl doors"},ibina:{qty:1,unit:"SET",price:4000,amt:4000,note:"Nippon EazyWash 2"},movein:{qty:1,unit:"SET",price:3850,amt:3850,note:"Nippon/Jotun Easy Wash"}},
+    {desc:"Skim wall for damaged areas",hulse:{qty:1,unit:"SET",price:500,amt:500},ibina:null,movein:null}
+  ]
+},
+{
+  name:"Custom Made Curtains & Blinds",
+  items:[
+    {desc:"Day/Sheer curtain (Living+Master+Bed1)",hulse:{qty:28.5,unit:"FT",price:30,amt:855,note:"Day curtain only"},ibina:{qty:40.5,unit:"FT",price:40,amt:1620,note:"White sheer"},movein:{qty:42,unit:"FT",price:90,amt:3780,note:"Double layer (day+night) x3 rooms"}},
+    {desc:"Night/Sunblock curtain",hulse:{qty:28.5,unit:"FT",price:48,amt:1368},ibina:{qty:40.5,unit:"FT",price:55,amt:2227.5,note:"Sunblock"},movein:null,note:"MoveIn incl in double layer"},
+    {desc:"Roller blind (Bedroom 2)",hulse:{qty:23,unit:"SQFT",price:13,amt:299},ibina:{qty:25,unit:"SQFT",price:13,amt:325},movein:{qty:20,unit:"SQFT",price:15,amt:300}}
+  ]
+},
+{
+  name:"Carpentry - Foyer",
+  items:[
+    {desc:"Full height shoe cabinet",hulse:{qty:2,unit:"FT",price:580,amt:1160},ibina:{qty:2.5,unit:"FT",price:570,amt:1425},movein:{qty:2.5,unit:"FT",price:450,amt:1125}},
+    {desc:"Colour carcass / upgrade",hulse:{qty:2,unit:"FT",price:125,amt:250},ibina:null,movein:null},
+    {desc:"LED recessed hole c/w aluminium casing",hulse:{qty:4,unit:"FT",price:20,amt:80},ibina:null,movein:null},
+    {desc:"End panel 16mm",hulse:null,ibina:null,movein:{qty:1,unit:"NOS",price:200,amt:200}}
+  ]
+},
+{
+  name:"Carpentry - Kitchen",
+  items:[
+    {desc:"Base unit (10ft)",hulse:{qty:10,unit:"FT",price:280,amt:2800},ibina:{qty:10,unit:"FT",price:270,amt:2700},movein:{qty:10,unit:"FT",price:285,amt:2850}},
+    {desc:"Quartz stone table top (main)",hulse:{qty:10,unit:"FT",price:200,amt:2000},ibina:{qty:10,unit:"FT",price:195,amt:1950},movein:{qty:10,unit:"FT",price:200,amt:2000}},
+    {desc:"PVC foam board carcass (sink area)",hulse:{qty:3,unit:"FT",price:160,amt:480},ibina:{qty:3,unit:"FT",price:180,amt:540},movein:{qty:1,unit:"FT",price:315,amt:315}},
+    {desc:"Sink opening hole",hulse:{qty:1,unit:"NOS",price:160,amt:160},ibina:{qty:1,unit:"NOS",price:200,amt:200},movein:{qty:1,unit:"NOS",price:0,amt:0,note:"Free"}},
+    {desc:"Hob opening hole",hulse:{qty:1,unit:"NOS",price:160,amt:160},ibina:{qty:1,unit:"NOS",price:100,amt:100},movein:{qty:1,unit:"NOS",price:0,amt:0,note:"Free"}},
+    {desc:"Soft close drawer 3 layers",hulse:{qty:1,unit:"SET",price:480,amt:480},ibina:{qty:1,unit:"SET",price:300,amt:300},movein:{qty:4,unit:"NOS",price:130,amt:520}},
+    {desc:"Full height wall unit",hulse:{qty:10,unit:"FT",price:425,amt:4250},ibina:{qty:10,unit:"FT",price:400,amt:4000},movein:{qty:10,unit:"FT",price:265,amt:2650,note:"900-1200mm, free LED trunking"}},
+    {desc:"Wall unit base panel",hulse:null,ibina:null,movein:{qty:10,unit:"FT",price:25,amt:250}},
+    {desc:"Stainless steel dish rack",hulse:{qty:1,unit:"NOS",price:250,amt:250},ibina:null,movein:{qty:1,unit:"NOS",price:0,amt:0,note:"Free (worth RM250)"}},
+    {desc:"Aluminium skirting",hulse:null,ibina:{qty:10,unit:"FT",price:20,amt:200},movein:null},
+    {desc:"LED recessed hole / trunking",hulse:{qty:7,unit:"FT",price:20,amt:140},ibina:null,movein:null},
+    {desc:"End panel 16mm (Short)",hulse:{qty:1,unit:"NOS",price:135,amt:135},ibina:null,movein:null},
+    {desc:"Tall unit",hulse:{qty:2,unit:"FT",price:585,amt:1170},ibina:{qty:2.5,unit:"FT",price:570,amt:1425},movein:null},
+    {desc:"End panel 16mm (Tall)",hulse:{qty:1,unit:"NOS",price:250,amt:250},ibina:{qty:4,unit:"NOS",price:250,amt:1000},movein:null},
+    {desc:"Fridge top cabinet",hulse:{qty:2.5,unit:"FT",price:450,amt:1125},ibina:{qty:3,unit:"FT",price:450,amt:1350},movein:{qty:2.5,unit:"FT",price:550,amt:1375,note:"Colour carcass + EP included"}},
+    {desc:"End panel 32mm (Tall)",hulse:{qty:1,unit:"NOS",price:300,amt:300},ibina:null,movein:null},
+    {desc:"Fridge cabinet back panel",hulse:{qty:23.75,unit:"SQFT",price:23.5,amt:558.13},ibina:null,movein:null},
+    {desc:"Island base / bar counter",hulse:{qty:4,unit:"FT",price:280,amt:1120},ibina:{qty:4.5,unit:"FT",price:515,amt:2317.5,note:"Bar counter 1100mm"},movein:{qty:5.5,unit:"FT",price:750,amt:4125,note:"Storage 850-900mm x 1200mmD incl EP"}},
+    {desc:"Stone top (Island)",hulse:{qty:4,unit:"FT",price:200,amt:800},ibina:{qty:4.5,unit:"FT",price:195,amt:877.5},movein:{qty:16.5,unit:"SQFT",price:135,amt:2227.5,note:"Sintered stone"}},
+    {desc:"Soft close drawer (Island)",hulse:{qty:1,unit:"SET",price:480,amt:480},ibina:{qty:1,unit:"SET",price:300,amt:300},movein:null},
+    {desc:"End panel (Short) - Island",hulse:{qty:1,unit:"NOS",price:135,amt:135},ibina:null,movein:null},
+    {desc:"Island back panel",hulse:{qty:12,unit:"SQFT",price:23.5,amt:282},ibina:null,movein:null},
+    {desc:"Aluminium skirting (Island)",hulse:null,ibina:{qty:4.5,unit:"NOS",price:20,amt:90},movein:null}
+  ]
+},
+{
+  name:"Carpentry - Living / TV Area",
+  items:[
+    {desc:"TV console (wall/base mounted)",hulse:{qty:7.5,unit:"FT",price:295,amt:2212.5},ibina:{qty:8.5,unit:"FT",price:420,amt:3570},movein:null},
+    {desc:"TV/dining feature wall / back panel",hulse:{qty:38,unit:"SQFT",price:48,amt:1824},ibina:{qty:170,unit:"SQFT",price:25,amt:4250,note:"17ft x 10ft TV & dining wall"},movein:null},
+    {desc:"LED for TV cabinet",hulse:{qty:9.5,unit:"FT",price:20,amt:190},ibina:{qty:8.5,unit:"FT",price:20,amt:170},movein:null}
+  ]
+},
+{
+  name:"Carpentry - Master Room",
+  items:[
+    {desc:"Swing door wardrobe (full height)",hulse:{qty:12,unit:"FT",price:585,amt:7020},ibina:{qty:11,unit:"FT",price:600,amt:6600,note:"3000mm"},movein:{qty:10.5,unit:"FT",price:585,amt:6142.5,note:"600mmD x 3100mmL L-shape"}},
+    {desc:"Wardrobe drawer (soft close)",hulse:{qty:3,unit:"NOS",price:165,amt:495},ibina:{qty:2,unit:"SET",price:300,amt:600},movein:{qty:4,unit:"NOS",price:130,amt:520}},
+    {desc:"Wardrobe end panel (Tall)",hulse:{qty:1,unit:"NOS",price:250,amt:250},ibina:{qty:2,unit:"NOS",price:250,amt:500},movein:{qty:1,unit:"NOS",price:300,amt:300}},
+    {desc:"Colour carcass / glass door upgrade",hulse:{qty:3,unit:"FT",price:125,amt:375},ibina:{qty:2,unit:"FT",price:750,amt:1500,note:"Glass door"},movein:null},
+    {desc:"Wardrobe glass door",hulse:null,ibina:{qty:20,unit:"SQFT",price:55,amt:1100},movein:null},
+    {desc:"Bedhead panel",hulse:{qty:42,unit:"SQFT",price:47.5,amt:1995},ibina:{qty:41,unit:"SQFT",price:60,amt:2460,note:"Customize"},movein:{qty:0,unit:"FT",price:198,amt:0,note:"OPTIONAL RM1,485"}},
+    {desc:"Bedhead cushion",hulse:null,ibina:{qty:17.5,unit:"SQFT",price:40,amt:700},movein:null},
+    {desc:"LED (bedhead + ceiling + tall unit)",hulse:{qty:12,unit:"FT",price:20,amt:240},ibina:{qty:56,unit:"FT",price:20,amt:1120},movein:{qty:0,unit:"SET",price:300,amt:0,note:"OPTIONAL RM300"}},
+    {desc:"Dressing table c/w drawer",hulse:{qty:2.5,unit:"FT",price:300,amt:750},ibina:{qty:2.5,unit:"FT",price:420,amt:1050,note:"Plywood"},movein:{qty:3,unit:"FT",price:265,amt:795}},
+    {desc:"Dresser drawer (soft close)",hulse:null,ibina:null,movein:{qty:2,unit:"NOS",price:130,amt:260}},
+    {desc:"Study/Drawer table",hulse:{qty:5,unit:"FT",price:300,amt:1500},ibina:{qty:4,unit:"FT",price:270,amt:1080},movein:{qty:7,unit:"FT",price:300,amt:2100}},
+    {desc:"Study table drawer",hulse:null,ibina:null,movein:{qty:3,unit:"NOS",price:130,amt:390}},
+    {desc:"Study table end panel",hulse:{qty:1,unit:"NOS",price:135,amt:135},ibina:null,movein:null},
+    {desc:"Full height wall unit",hulse:{qty:5,unit:"FT",price:425,amt:2125},ibina:null,movein:null},
+    {desc:"Wall unit colour carcass",hulse:{qty:5,unit:"FT",price:125,amt:625},ibina:null,movein:null},
+    {desc:"Wall unit LED",hulse:{qty:10,unit:"FT",price:20,amt:200},ibina:{qty:20,unit:"FT",price:20,amt:400},movein:null},
+    {desc:"Wall unit end panel",hulse:{qty:1,unit:"NOS",price:135,amt:135},ibina:null,movein:null},
+    {desc:"Bench cabinet / window bench",hulse:{qty:8.5,unit:"FT",price:300,amt:2550},ibina:{qty:7.5,unit:"FT",price:270,amt:2025},movein:null},
+    {desc:"Bench cushion",hulse:null,ibina:{qty:15,unit:"SQFT",price:40,amt:600},movein:null},
+    {desc:"Tatami platform",hulse:null,ibina:{qty:46,unit:"SQFT",price:60,amt:2760},movein:{qty:11.5,unit:"SQFT",price:76,amt:874,note:"2250x450mm incl 3 drawers"}},
+    {desc:"On-wall display shelving",hulse:null,ibina:null,movein:{qty:2,unit:"NOS",price:200,amt:400}},
+    {desc:"Bathroom mirror cabinet",hulse:null,ibina:null,movein:{qty:17.5,unit:"SQFT",price:60,amt:1050}}
+  ]
+},
+{
+  name:"Carpentry - Bedroom 1 (Boy Room)",
+  items:[
+    {desc:"Tatami bed platform",hulse:{qty:78.75,unit:"SQFT",price:58,amt:4567.5},ibina:{qty:67.5,unit:"SQFT",price:60,amt:4050},movein:{qty:81,unit:"SQFT",price:76,amt:6156,note:"Incl 3 drawers + stair"}},
+    {desc:"Tatami LED (stair/recessed)",hulse:{qty:10.5,unit:"FT",price:20,amt:210},ibina:{qty:15,unit:"FT",price:20,amt:300},movein:null},
+    {desc:"Swing door wardrobe (full height)",hulse:{qty:7.5,unit:"FT",price:585,amt:4387.5},ibina:{qty:9,unit:"FT",price:600,amt:5400,note:"3000mm"},movein:{qty:9,unit:"FT",price:585,amt:5265}},
+    {desc:"Wardrobe drawer (soft close)",hulse:{qty:3,unit:"NOS",price:165,amt:495},ibina:{qty:2,unit:"SET",price:300,amt:600},movein:{qty:3,unit:"NOS",price:130,amt:390}},
+    {desc:"Wardrobe end panel",hulse:{qty:1,unit:"NOS",price:1280,amt:1280,note:"Curved plywood"},ibina:{qty:2,unit:"NOS",price:250,amt:500},movein:{qty:1,unit:"NOS",price:300,amt:300}},
+    {desc:"Colour carcass / glass door",hulse:null,ibina:{qty:2,unit:"FT",price:750,amt:1500},movein:null},
+    {desc:"Wardrobe glass door",hulse:null,ibina:{qty:20,unit:"SQFT",price:55,amt:1100},movein:null},
+    {desc:"LED (tall unit / ceiling / bedhead)",hulse:{qty:8.5,unit:"FT",price:20,amt:170},ibina:{qty:82.5,unit:"FT",price:20,amt:1650},movein:null},
+    {desc:"Bedhead panel",hulse:{qty:29.75,unit:"SQFT",price:47.5,amt:1413.13},ibina:{qty:29.8,unit:"SQFT",price:60,amt:1788},movein:null},
+    {desc:"Bedhead cushion",hulse:null,ibina:{qty:17.5,unit:"SQFT",price:40,amt:700},movein:null},
+    {desc:"Study table c/w drawer",hulse:{qty:5,unit:"FT",price:300,amt:1500},ibina:{qty:4,unit:"FT",price:270,amt:1080},movein:{qty:6,unit:"FT",price:300,amt:1800}},
+    {desc:"Study table drawer",hulse:null,ibina:null,movein:{qty:3,unit:"NOS",price:130,amt:390}},
+    {desc:"Study table end panel",hulse:{qty:1,unit:"NOS",price:135,amt:135},ibina:null,movein:null},
+    {desc:"Full height wall unit",hulse:{qty:5,unit:"FT",price:425,amt:2125},ibina:{qty:4,unit:"FT",price:450,amt:1800,note:"1500mm"},movein:null},
+    {desc:"Wall unit colour carcass",hulse:{qty:5,unit:"FT",price:125,amt:625},ibina:null,movein:null},
+    {desc:"Wall unit LED",hulse:{qty:10,unit:"FT",price:20,amt:200},ibina:{qty:20,unit:"FT",price:20,amt:400},movein:null},
+    {desc:"Wall unit end panel",hulse:{qty:2,unit:"NOS",price:135,amt:270},ibina:null,movein:null},
+    {desc:"On-wall display shelving",hulse:null,ibina:null,movein:{qty:2,unit:"NOS",price:200,amt:400}}
+  ]
+},
+{
+  name:"Carpentry - Bedroom 2 (Girl Room)",
+  items:[
+    {desc:"Tatami bed platform",hulse:{qty:34,unit:"SQFT",price:58,amt:1972},ibina:{qty:47,unit:"SQFT",price:60,amt:2820},movein:{qty:49,unit:"SQFT",price:76,amt:3724,note:"Incl 3 drawers"}},
+    {desc:"Tatami drawer",hulse:{qty:2,unit:"NOS",price:235,amt:470},ibina:{qty:1,unit:"SET",price:300,amt:300},movein:null,note:"MoveIn incl in tatami"},
+    {desc:"Tatami / cabinet LED",hulse:{qty:4,unit:"FT",price:20,amt:80},ibina:{qty:75,unit:"FT",price:20,amt:1500},movein:null},
+    {desc:"Swing door wardrobe (full height)",hulse:{qty:7.5,unit:"FT",price:585,amt:4387.5},ibina:{qty:6.5,unit:"FT",price:600,amt:3900},movein:{qty:7,unit:"FT",price:585,amt:4095}},
+    {desc:"Wardrobe drawer (soft close)",hulse:{qty:3,unit:"NOS",price:165,amt:495},ibina:null,movein:{qty:3,unit:"NOS",price:130,amt:390}},
+    {desc:"Wardrobe end panel",hulse:{qty:1,unit:"NOS",price:250,amt:250},ibina:null,movein:{qty:2,unit:"NOS",price:300,amt:600}},
+    {desc:"Colour carcass / glass door",hulse:{qty:2,unit:"FT",price:125,amt:250},ibina:{qty:2,unit:"FT",price:750,amt:1500},movein:null},
+    {desc:"Wardrobe glass door",hulse:null,ibina:{qty:20,unit:"SQFT",price:55,amt:1100},movein:null},
+    {desc:"Bedhead panel",hulse:null,ibina:{qty:17.5,unit:"SQFT",price:60,amt:1050},movein:null},
+    {desc:"Bedhead cushion",hulse:null,ibina:{qty:12.5,unit:"SQFT",price:40,amt:500},movein:null},
+    {desc:"Study / Dressing table",hulse:{qty:3,unit:"FT",price:300,amt:900},ibina:{qty:4,unit:"FT",price:270,amt:1080},movein:{qty:3.5,unit:"FT",price:300,amt:1050}},
+    {desc:"Back panel",hulse:{qty:6,unit:"SQFT",price:23.5,amt:141},ibina:null,movein:null}
+  ]
+},
+{
+  name:"Plumbing & Other Installations",
+  items:[
+    {desc:"Install bathroom basin c/w piping",hulse:{qty:2,unit:"SET",price:350,amt:700},ibina:null,movein:null},
+    {desc:"Dismantle sink & install sink/mirror (Bathroom)",hulse:null,ibina:{qty:2,unit:"SET",price:1000,amt:2000},movein:null},
+    {desc:"Window yard",hulse:null,ibina:{qty:1,unit:"SET",price:1500,amt:1500},movein:null},
+    {desc:"Hood installation",hulse:null,ibina:{qty:1,unit:"SET",price:300,amt:300},movein:{qty:1,unit:"NOS",price:0,amt:0,note:"Free"}},
+    {desc:"Install sink & water tap",hulse:null,ibina:{qty:1,unit:"SET",price:300,amt:300},movein:{qty:1,unit:"NOS",price:0,amt:0,note:"Free"}}
+  ]
+},
+{
+  name:"Free Gifts & Extras",
+  items:[
+    {desc:"3D Visualization / Design drawings",hulse:{qty:1,unit:"SET",price:0,amt:0,note:"3D perspective"},ibina:null,movein:{qty:1,unit:"SET",price:0,amt:0,note:"VR 360 + carpentry + M&E (worth RM2500)"}},
+    {desc:"Delivery & installation fee",hulse:null,ibina:null,movein:{qty:1,unit:"LS",price:0,amt:0,note:"Waived (worth RM2500)"}},
+    {desc:"Aluminium soft close sauce tray",hulse:null,ibina:null,movein:{qty:1,unit:"NOS",price:0,amt:0,note:"Free (worth RM300)"}}
+  ]
+}
+],
+hulseGrand: 96135.75,
+ibinaGrand: 112033,
+moveinGrand: 71362.40,
+klaasGrand: 94800,
+// KlaaS category mapping (estimated from their lump-sum breakdown)
+klaasCategories: {
+  "Package (base - wardrobes, bedrooms, curtains, fans, painting, misc)": 59000,
+  "Cabinet / Wardrobe / Bench (additional)": 11000,
+  "Kitchen + Island": 18500,
+  "Plaster Ceiling": 2500,
+  "Touch-up Works": 1500,
+  "Lighting (LED) & Switches": 2300
+},
+// Map KlaaS lump sums to our categories for chart comparison
+klaasMapping: {
+  "Preliminary & Preparatory Works": null,
+  "Electrical & Wiring Works": 2300,
+  "Light Fixtures & Electrical Items": null,
+  "Air-Conditioning": null,
+  "Ceiling Works": 2500,
+  "Wall Finishing / Painting": 1500,
+  "Custom Made Curtains & Blinds": null,
+  "Carpentry - Foyer": null,
+  "Carpentry - Kitchen": 18500,
+  "Carpentry - Living / TV Area": null,
+  "Carpentry - Master Room": null,
+  "Carpentry - Bedroom 1 (Boy Room)": null,
+  "Carpentry - Bedroom 2 (Girl Room)": null,
+  "Plumbing & Other Installations": null,
+  "Free Gifts & Extras": null
+},
+// KlaaS bundled estimate (for categories marked null above, they're in the RM59K+RM11K package)
+klaasPackageNote: "RM59,000 package covers: all bedroom wardrobes, benches, loose items (curtains, fans, etc). RM11,000 additional for cabinet/wardrobe/bench beyond package.",
+payment:{
+  hulse:{terms:"Not disclosed",stages:[]},
+  ibina:{terms:"4-stage",stages:[{s:"Booking",pct:"5%",amt:5601.65},{s:"Job Confirmation",pct:"60%",amt:67219.80},{s:"Wiring & Lighting",pct:"20%",amt:22406.60},{s:"Handover",pct:"15%",amt:16804.95}]},
+  movein:{terms:"4-stage",stages:[{s:"Booking (design dev)",pct:"10%",amt:7136.24},{s:"1st Payment (before works)",pct:"50%",amt:35681.20},{s:"2nd Payment (before delivery)",pct:"35%",amt:24976.84},{s:"Final (3 days after completion)",pct:"5%",amt:3568.12}]},
+  klaas:{terms:"Not disclosed",stages:[]}
+}
+};
+
+// Compute category totals
+DATA.categories.forEach(cat=>{
+  cat.hulseTotal=0;cat.ibinaTotal=0;cat.moveinTotal=0;
+  cat.items.forEach(it=>{
+    if(it.hulse)cat.hulseTotal+=it.hulse.amt;
+    if(it.ibina)cat.ibinaTotal+=it.ibina.amt;
+    if(it.movein)cat.moveinTotal+=it.movein.amt;
+  });
+  cat.klaasTotal=DATA.klaasMapping[cat.name];
+});
+
+const fmt=n=>"RM "+n.toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtS=n=>"RM "+n.toLocaleString('en-MY',{minimumFractionDigits:0,maximumFractionDigits:0});
+
+// Summary Cards
+document.getElementById('summary-cards').innerHTML=`
+<div class="cards">
+  <div class="card hulse"><div class="card-label">Hulse Design</div><div class="card-value">${fmt(DATA.hulseGrand)}</div><div class="card-sub">Detailed quote &bull; Standard finish</div></div>
+  <div class="card ibina"><div class="card-label">IBINA Concept</div><div class="card-value">${fmt(DATA.ibinaGrand)}</div><div class="card-sub">Detailed quote &bull; Premium finish</div></div>
+  <div class="card movein"><div class="card-label">MoveIn Sdn Bhd</div><div class="card-value">${fmt(DATA.moveinGrand)}</div><div class="card-sub">Detailed &bull; Promo expires 15/05</div></div>
+  <div class="card klaas"><div class="card-label">KlaaS Design</div><div class="card-value">${fmt(DATA.klaasGrand)}</div><div class="card-sub">Lump-sum categories only</div></div>
+  <div class="card best"><div class="card-label">Price Range</div><div class="card-value">${fmtS(DATA.moveinGrand)} - ${fmtS(DATA.ibinaGrand)}</div><div class="card-sub">Spread: ${fmtS(DATA.ibinaGrand-DATA.moveinGrand)} (57% gap)</div></div>
+</div>`;
+
+// KlaaS note
+document.getElementById('klaas-note').innerHTML=`
+<div class="klaas-note">
+<h3>KlaaS Design - Lump-Sum Breakdown (No Item Detail)</h3>
+<p>KlaaS provided only category-level pricing without individual item breakdown. Their quote structure:</p>
+<p><strong>Package: RM59,000</strong> (includes loose items - wardrobes, bedroom carpentry, curtains, fans, painting, misc)</p>
+<p><strong>Cabinet / Wardrobe / Bench: RM11,000</strong> (additional beyond package) | <strong>Kitchen + Island: RM18,500</strong> | <strong>Plaster Ceiling: RM2,500</strong> | <strong>Touch-up Works: RM1,500</strong> | <strong>Lighting (LED) & Switches: RM2,300</strong></p>
+<p style="margin-top:8px;color:#f472b6">Note: Because KlaaS bundles most items into a RM59K package, direct item-level comparison is not possible. The category comparison below maps their breakdown where possible, but many categories are bundled together in their "Package" line.</p>
+</div>`;
+
+// Category Comparison Table (all 4 companies at category level)
+let catHtml='<div class="cat-compare"><h2>Category-Level Comparison (All 4 Companies)</h2><div class="tbl-scroll"><table><thead><tr><th>Category</th><th style="color:#60a5fa">Hulse</th><th style="color:#f59e0b">IBINA</th><th style="color:#a78bfa">MoveIn</th><th style="color:#f472b6">KlaaS</th><th>Lowest</th></tr></thead><tbody>';
+
+// Consolidate for KlaaS comparison
+const catGroups = [
+  {label:"Preliminary & Prep",cats:["Preliminary & Preparatory Works"],klaas:null,kNote:"In Package"},
+  {label:"Electrical & Wiring",cats:["Electrical & Wiring Works"],klaas:2300,kNote:"Lighting(LED)&Switches"},
+  {label:"Light Fixtures & Items",cats:["Light Fixtures & Electrical Items"],klaas:null,kNote:"In Package"},
+  {label:"Air-Conditioning",cats:["Air-Conditioning"],klaas:null,kNote:"Not mentioned"},
+  {label:"Ceiling Works",cats:["Ceiling Works"],klaas:2500,kNote:"Plaster Ceiling"},
+  {label:"Painting / Wall Finish",cats:["Wall Finishing / Painting"],klaas:1500,kNote:"Touch-up Works"},
+  {label:"Curtains & Blinds",cats:["Custom Made Curtains & Blinds"],klaas:null,kNote:"In Package"},
+  {label:"Carpentry - Foyer",cats:["Carpentry - Foyer"],klaas:null,kNote:"In Cab/Ward/Bench"},
+  {label:"Carpentry - Kitchen + Island",cats:["Carpentry - Kitchen"],klaas:18500,kNote:"Kitchen+Island"},
+  {label:"Carpentry - Living/TV",cats:["Carpentry - Living / TV Area"],klaas:null,kNote:"In Package"},
+  {label:"Carpentry - Master Room",cats:["Carpentry - Master Room"],klaas:null,kNote:"In Package+Cab"},
+  {label:"Carpentry - Bedroom 1",cats:["Carpentry - Bedroom 1 (Boy Room)"],klaas:null,kNote:"In Package+Cab"},
+  {label:"Carpentry - Bedroom 2",cats:["Carpentry - Bedroom 2 (Girl Room)"],klaas:null,kNote:"In Package+Cab"},
+  {label:"Plumbing & Other Install",cats:["Plumbing & Other Installations"],klaas:null,kNote:"Not mentioned"},
+  {label:"Free Gifts & Extras",cats:["Free Gifts & Extras"],klaas:0,kNote:"-"}
+];
+
+let grandH=0,grandI=0,grandM=0,grandK=0;
+catGroups.forEach(g=>{
+  let h=0,i=0,m=0;
+  g.cats.forEach(cn=>{
+    const cat=DATA.categories.find(c=>c.name===cn);
+    if(cat){h+=cat.hulseTotal;i+=cat.ibinaTotal;m+=cat.moveinTotal;}
+  });
+  const k=g.klaas;
+  grandH+=h;grandI+=i;grandM+=m;if(k!==null)grandK+=k;
+  // Find lowest among available
+  const vals=[];
+  if(h>0)vals.push({v:h,n:'Hulse',c:'badge-h'});
+  if(i>0)vals.push({v:i,n:'IBINA',c:'badge-i'});
+  if(m>0)vals.push({v:m,n:'MoveIn',c:'badge-m'});
+  if(k!==null&&k>0)vals.push({v:k,n:'KlaaS',c:'badge-k'});
+  vals.sort((a,b)=>a.v-b.v);
+  const best=vals.length?`<span class="badge ${vals[0].c}">${vals[0].n}</span>`:'';
+
+  catHtml+=`<tr>
+    <td><strong>${g.label}</strong></td>
+    <td>${h>0?fmt(h):'<span class="na">-</span>'}</td>
+    <td>${i>0?fmt(i):'<span class="na">-</span>'}</td>
+    <td>${m>0?fmt(m):(m<0?fmt(m):'<span class="na">-</span>')}</td>
+    <td>${k!==null?(k>0?fmt(k):(k===0?'-':'<span class="na">-</span>')):'<span class="na" title="'+g.kNote+'">Bundled*</span>'}</td>
+    <td>${best}</td>
+  </tr>`;
+});
+catHtml+=`<tr class="cat-row"><td>GRAND TOTAL</td><td style="color:#60a5fa">${fmt(DATA.hulseGrand)}</td><td style="color:#f59e0b">${fmt(DATA.ibinaGrand)}</td><td style="color:#a78bfa">${fmt(DATA.moveinGrand)}</td><td style="color:#f472b6">${fmt(DATA.klaasGrand)}</td><td><span class="badge badge-m">MoveIn</span></td></tr>`;
+catHtml+='</tbody></table></div><p style="padding:10px 20px;font-size:10px;color:#666">* KlaaS "Bundled" = included in RM59,000 package + RM11,000 cabinet/wardrobe/bench. Cannot be separated into individual category costs.</p></div>';
+document.getElementById('cat-compare-section').innerHTML=catHtml;
+
+// Chart (exclude KlaaS from bar chart since their data is bundled, show as line for total reference)
+const filteredCats=DATA.categories.filter(c=>c.hulseTotal>0||c.ibinaTotal>0||c.moveinTotal>0);
+document.getElementById('chart-section').innerHTML='<div class="chart-wrap"><h2>Category Cost Comparison (Hulse / IBINA / MoveIn)</h2><div class="legend"><span><span class="dot dot-h"></span>Hulse</span><span><span class="dot dot-i"></span>IBINA</span><span><span class="dot dot-m"></span>MoveIn</span><span><span class="dot dot-k"></span>KlaaS (where available)</span></div><canvas id="catChart"></canvas></div>';
+
+const chartCats=catGroups.filter(g=>{
+  let h=0,i=0,m=0;g.cats.forEach(cn=>{const cat=DATA.categories.find(c=>c.name===cn);if(cat){h+=cat.hulseTotal;i+=cat.ibinaTotal;m+=cat.moveinTotal;}});
+  return h>0||i>0||m>0;
+});
+
+new Chart(document.getElementById('catChart'),{
+  type:'bar',
+  data:{labels:chartCats.map(g=>g.label.replace('Carpentry - ','')),datasets:[
+    {label:'Hulse',data:chartCats.map(g=>{let t=0;g.cats.forEach(cn=>{const c=DATA.categories.find(x=>x.name===cn);if(c)t+=c.hulseTotal;});return t;}),backgroundColor:'rgba(96,165,250,0.7)',borderRadius:3},
+    {label:'IBINA',data:chartCats.map(g=>{let t=0;g.cats.forEach(cn=>{const c=DATA.categories.find(x=>x.name===cn);if(c)t+=c.ibinaTotal;});return t;}),backgroundColor:'rgba(245,158,11,0.7)',borderRadius:3},
+    {label:'MoveIn',data:chartCats.map(g=>{let t=0;g.cats.forEach(cn=>{const c=DATA.categories.find(x=>x.name===cn);if(c)t+=c.moveinTotal;});return t;}),backgroundColor:'rgba(167,139,250,0.7)',borderRadius:3},
+    {label:'KlaaS',data:chartCats.map(g=>g.klaas||0),backgroundColor:'rgba(244,114,182,0.7)',borderRadius:3}
+  ]},
+  options:{responsive:true,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.raw?`${ctx.dataset.label}: ${fmt(ctx.raw)}`:''}}},scales:{x:{ticks:{color:'#8b8fa3',font:{size:9},maxRotation:50},grid:{color:'#1e2132'}},y:{ticks:{color:'#8b8fa3',callback:v=>'RM'+v.toLocaleString()},grid:{color:'#1e2132'}}}}
+});
+
+// Category Nav (for detailed 3-company view)
+let activeCat='all';
+function renderNav(){
+  let h='<div class="cat-nav"><button class="cat-btn '+(activeCat==='all'?'active':'')+'" onclick="selectCat(\'all\')">All Categories</button>';
+  DATA.categories.forEach((c,i)=>{if(c.hulseTotal>0||c.ibinaTotal>0||c.moveinTotal>0)h+=`<button class="cat-btn ${activeCat===i?'active':''}" onclick="selectCat(${i})">${c.name.replace('Carpentry - ','')}</button>`;});
+  h+='</div>';document.getElementById('category-nav').innerHTML=h;
+}
+function selectCat(i){activeCat=i;renderNav();renderDetail();}
+renderNav();
+
+// Detail Table (3 companies with item matching)
+function renderDetail(){
+  const cats=activeCat==='all'?DATA.categories:[DATA.categories[activeCat]];
+  let h='<div class="detail-table-wrap"><h2>Item-by-Item Comparison (Hulse / IBINA / MoveIn - matched by description)</h2><div class="tbl-scroll"><table><thead><tr><th>Description</th><th>Hulse Qty</th><th>Hulse $/unit</th><th>Hulse Amt</th><th>IBINA Qty</th><th>IBINA $/unit</th><th>IBINA Amt</th><th>MoveIn Qty</th><th>MoveIn $/unit</th><th>MoveIn Amt</th><th>Best</th></tr></thead><tbody>';
+  cats.forEach(cat=>{
+    if(cat.hulseTotal===0&&cat.ibinaTotal===0&&cat.moveinTotal===0)return;
+    const kStr=cat.klaasTotal!==null?` | KlaaS: ${fmt(cat.klaasTotal)}`:'';
+    h+=`<tr class="cat-row"><td colspan="3">${cat.name}</td><td style="color:#60a5fa">${fmt(cat.hulseTotal)}</td><td colspan="2"></td><td style="color:#f59e0b">${fmt(cat.ibinaTotal)}</td><td colspan="2"></td><td style="color:#a78bfa">${fmt(cat.moveinTotal)}</td><td>${getBestBadge(cat.hulseTotal,cat.ibinaTotal,cat.moveinTotal)}</td></tr>`;
+    cat.items.forEach(it=>{
+      const amts=[it.hulse?it.hulse.amt:Infinity,it.ibina?it.ibina.amt:Infinity,it.movein?it.movein.amt:Infinity].filter(a=>a!==Infinity&&a>=0);
+      const minAmt=amts.length?Math.min(...amts):Infinity;
+      h+='<tr>';
+      h+=`<td>${it.desc}${it.note?'<br><span style="color:#555;font-size:9px">'+it.note+'</span>':''}</td>`;
+      if(it.hulse){const cls=it.hulse.amt===minAmt&&amts.length>1?'lowest':'';h+=`<td>${it.hulse.qty} ${it.hulse.unit}</td><td>${fmt(it.hulse.price)}</td><td class="${cls}">${fmt(it.hulse.amt)}${it.hulse.note?'<br><span style="color:#555;font-size:9px">'+it.hulse.note+'</span>':''}</td>`;}
+      else h+='<td class="na">-</td><td class="na">-</td><td class="na">-</td>';
+      if(it.ibina){const cls=it.ibina.amt===minAmt&&amts.length>1?'lowest':'';h+=`<td>${it.ibina.qty} ${it.ibina.unit}</td><td>${fmt(it.ibina.price)}</td><td class="${cls}">${fmt(it.ibina.amt)}${it.ibina.note?'<br><span style="color:#555;font-size:9px">'+it.ibina.note+'</span>':''}</td>`;}
+      else h+='<td class="na">-</td><td class="na">-</td><td class="na">-</td>';
+      if(it.movein){const cls=it.movein.amt===minAmt&&amts.length>1?'lowest':'';h+=`<td>${it.movein.qty} ${it.movein.unit}</td><td>${fmt(it.movein.price)}</td><td class="${cls}">${fmt(it.movein.amt)}${it.movein.note?'<br><span style="color:#555;font-size:9px">'+it.movein.note+'</span>':''}</td>`;}
+      else h+='<td class="na">-</td><td class="na">-</td><td class="na">-</td>';
+      h+=`<td>${getItemBadge(it)}</td></tr>`;
+    });
+  });
+  h+='</tbody></table></div></div>';
+  document.getElementById('detail-section').innerHTML=h;
+}
+function getBestBadge(h,i,m){
+  const vals=[{v:h,n:'Hulse',c:'badge-h'},{v:i,n:'IBINA',c:'badge-i'},{v:m,n:'MoveIn',c:'badge-m'}].filter(x=>x.v>0);
+  if(!vals.length)return'';vals.sort((a,b)=>a.v-b.v);
+  return`<span class="badge ${vals[0].c}">${vals[0].n}</span>`;
+}
+function getItemBadge(it){
+  const entries=[];
+  if(it.hulse&&it.hulse.amt>=0)entries.push({v:it.hulse.amt,n:'Hulse',c:'badge-h'});
+  if(it.ibina&&it.ibina.amt>=0)entries.push({v:it.ibina.amt,n:'IBINA',c:'badge-i'});
+  if(it.movein&&it.movein.amt>=0)entries.push({v:it.movein.amt,n:'MoveIn',c:'badge-m'});
+  if(entries.length<2)return entries.length?`<span class="badge badge-tie">${entries[0].n} only</span>`:'';
+  entries.sort((a,b)=>a.v-b.v);
+  if(entries[0].v===entries[1].v)return'<span class="badge badge-tie">Tied</span>';
+  return`<span class="badge ${entries[0].c}">${entries[0].n}</span>`;
+}
+renderDetail();
+
+// Design Section
+document.getElementById('design-section').innerHTML=`
+<div class="design-grid">
+<div class="design-card hulse"><h3>Hulse Design - RM 96,136</h3><ul>
+<li><strong>Material:</strong> Standard melamine, quartz stone countertops</li>
+<li><strong>Ceiling:</strong> 870 sqft plaster ceiling + pelmet + 23.5ft light trough</li>
+<li><strong>Paint:</strong> Basic colour (brand unspecified) + wall skim repair</li>
+<li><strong>Kitchen:</strong> 10ft base+wall+tall unit, 4ft island, quartz tops, dish rack</li>
+<li><strong>Wardrobe:</strong> Standard swing door (585/ft), curved plywood end panel (boy room)</li>
+<li><strong>Bedrooms:</strong> Standard bedheads (47.5/sqft), tatami (58/sqft), study tables</li>
+<li><strong>Electrical:</strong> Most comprehensive - 29 ceiling points, 13 power points, all LED strips, water heaters, doorbell, aircon install</li>
+<li><strong>Living:</strong> 7.5ft TV console + 38sqft feature wall</li>
+<li><strong>Extras:</strong> Free 3D visualization, aircon installation (4 units)</li>
+</ul></div>
+<div class="design-card ibina"><h3>IBINA Concept - RM 112,033</h3><ul>
+<li><strong>Material:</strong> Premium - glass wardrobe doors, cushioned bedheads, extensive LED</li>
+<li><strong>Ceiling:</strong> 920 sqft (largest) + 40.5ft light trough</li>
+<li><strong>Paint:</strong> Nippon EazyWash 2 (branded)</li>
+<li><strong>Kitchen:</strong> 10ft base+wall+tall, 4.5ft island BAR COUNTER (1100mm height)</li>
+<li><strong>Wardrobe:</strong> Full height 3000mm with GLASS DOORS + colour carcass in ALL rooms</li>
+<li><strong>Bedrooms:</strong> Custom bedheads (60/sqft) + cushion, larger tatami (60/sqft), LED everywhere</li>
+<li><strong>Living:</strong> 170sqft TV & dining wall (17ft x 10ft!) + 8.5ft console. Major design statement.</li>
+<li><strong>Master:</strong> Window bench+cushion, tatami, multiple LED zones</li>
+<li><strong>Other:</strong> Window yard, bathroom sink/mirror, hood & tap install</li>
+</ul></div>
+<div class="design-card movein"><h3>MoveIn Sdn Bhd - RM 71,362</h3><ul>
+<li><strong>Material:</strong> Melamine E1 throughout. Functional, clean.</li>
+<li><strong>Ceiling:</strong> Only 350 sqft (Living/Kitchen/Dining). Bedrooms excluded.</li>
+<li><strong>Paint:</strong> Nippon/Jotun Easy Wash (branded)</li>
+<li><strong>Kitchen:</strong> 10ft base+wall (cheapest wall unit at 265/ft), 5.5ft island STORAGE cabinet with SINTERED STONE top (premium material)</li>
+<li><strong>Wardrobe:</strong> Standard swing door (585/ft). No glass doors.</li>
+<li><strong>Bedrooms:</strong> Tatami (76/sqft - highest but incl drawers+stair), study desks. NO bedhead panels (optional).</li>
+<li><strong>Living:</strong> NO TV console or feature wall. Major omission.</li>
+<li><strong>Electrical:</strong> Minimal - fewer points, no cabinet LED, fixtures optional (~RM2,915)</li>
+<li><strong>Freebies:</strong> RM8K+ in promos (delivery, design, management, dish rack, sauce tray, cashback). CIDB licensed. Expires 15/05/2026.</li>
+</ul></div>
+<div class="design-card klaas"><h3>KlaaS Design - RM 94,800</h3><ul>
+<li><strong>Format:</strong> Lump-sum estimate only. No item-level breakdown provided.</li>
+<li><strong>Package RM59,000:</strong> Covers wardrobes, bedroom carpentry, bench, curtains, fans, painting, and other "loose items" bundled together.</li>
+<li><strong>Cabinet/Wardrobe/Bench RM11,000:</strong> Additional carpentry beyond the package allocation.</li>
+<li><strong>Kitchen + Island RM18,500:</strong> Comparable to Hulse (RM16,875) and IBINA (RM17,350). Higher than both for kitchen alone.</li>
+<li><strong>Plaster Ceiling RM2,500:</strong> Much lower than Hulse (RM5,364) and IBINA (RM6,633). Likely less coverage.</li>
+<li><strong>Touch-up Works RM1,500:</strong> Comparable to painting/repair work.</li>
+<li><strong>Lighting RM2,300:</strong> Much lower than Hulse (RM12,520 elec+fixtures) and IBINA (RM8,180). Likely minimal scope.</li>
+<li><strong>Key concern:</strong> Without item breakdown, impossible to verify scope, material specs, or compare unit rates. Higher risk of scope disputes.</li>
+<li><strong>Verdict:</strong> Competitive total price, but lack of transparency makes it the hardest to evaluate.</li>
+</ul></div>
+</div>`;
+
+// Recommendation
+document.getElementById('recommendation-section').innerHTML=`
+<div class="rec-card">
+<h2>Final Analysis & Decision Guide</h2>
+<div class="rec-grid">
+<div class="rec-item"><h4>Lowest Price</h4><p><strong>MoveIn RM 71,362</strong> - but excludes TV wall, has minimal ceiling (350sqft), no light fixtures. With comparable add-ons, estimate ~RM 80-85K. Best if you're willing to source some items yourself and have a tight budget.</p></div>
+<div class="rec-item"><h4>Best Scope-to-Price</h4><p><strong>Hulse RM 96,136</strong> - most complete package including aircon install, comprehensive electrical, full ceiling, TV wall, LED strips, water heaters. Standard finishes but nothing missing. Best "no surprises" option.</p></div>
+<div class="rec-item"><h4>Premium Design</h4><p><strong>IBINA RM 112,033</strong> - glass wardrobes, 170sqft TV/dining wall, cushion bedheads, DC fans, branded paint, extensive LED. For design-focused owners willing to pay for premium finishes.</p></div>
+<div class="rec-item"><h4>Least Transparent</h4><p><strong>KlaaS RM 94,800</strong> - competitive price but lump-sum format with no item details. Impossible to verify scope or unit rates. Higher risk of "not included" surprises during renovation. Must request detailed breakdown before considering.</p></div>
+</div>
+<div class="rec-verdict">
+<p><strong>Key Actions Before Deciding:</strong></p>
+<p>1. <strong>KlaaS:</strong> Request a detailed item breakdown matching the other quotes' format. Without it, you cannot assess value. Their RM94.8K could be great value or could exclude items that will cost extra later.</p>
+<p>2. <strong>MoveIn:</strong> Ask them to quote: TV console + feature wall, plaster ceiling for bedrooms, light fixtures/fans (currently optional). Also confirm the promo deadline (15/05/2026).</p>
+<p>3. <strong>Hulse:</strong> Request payment terms, specify paint brand, and ask if they can match IBINA's 170sqft TV/dining wall as an add-on option.</p>
+<p>4. <strong>IBINA:</strong> Their RM16K premium over Hulse buys: glass wardrobe doors (all rooms), 132sqft more TV/dining wall, cushion bedheads, DC motor fans, larger curtain coverage. Decide if these upgrades matter to you.</p>
+<p>5. <strong>Unit rate comparison (key items):</strong> Wardrobe/ft: Hulse RM585, IBINA RM600, MoveIn RM585, KlaaS unknown. Kitchen wall unit/ft: Hulse RM425, IBINA RM400, MoveIn RM265. Plaster ceiling/sqft: Hulse RM4.80, IBINA RM6, MoveIn RM6, KlaaS ~RM7.14 (if 350sqft).</p>
+<p>6. <strong>Credentials:</strong> MoveIn has CIDB license. IBINA provided formal T&C. Hulse and KlaaS - verify licensing, portfolio, and warranty terms.</p>
+<p>7. <strong>Payment risk:</strong> IBINA requires 65% before major work starts (5%+60%). MoveIn requires 60% before work (10%+50%). Lower upfront = lower risk for you.</p>
+</div>
+</div>`;
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"75124c326cb447fe934cde04713ae013","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
